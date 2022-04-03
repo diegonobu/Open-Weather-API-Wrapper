@@ -35,6 +35,20 @@ export CACHE_THRESHOLD=5
 python run.py
 ```
 
+Also, you can specify **port** and/or **debug** mode.
+
+```bash
+python run.py --port=5001 --debug
+```
+
+### Endpoints
+
+| PATH | DESCRIPTION                                                                        |
+|------|------------------------------------------------------------------------------------|
+|/temperature/<city_name>| Get the current temperature for the specified **city_name**                        |
+|/temperature?max=<max_number>| Get latest **max_number** queried cities that are still validly cached to be retrieved |
+
+
 ## Running our unit tests
 
 Install requirements for development.
