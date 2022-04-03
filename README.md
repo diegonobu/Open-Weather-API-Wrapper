@@ -19,11 +19,14 @@ pip install -r requirements.txt
 
 ### Setting environmental variables
 
-Create a file called `.env` with environmental variables.
+Configuration values for [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching)
 
-```text
-OPEN_WEATHER_API_KEY=<API KEY>
-DEFAULT_MAX_NUMBER=<time interval>
+```bash
+export OPEN_WEATHER_API_KEY=<API KEY>
+export DEFAULT_MAX_NUMBER=<time interval>
+export CACHE_TYPE=SimpleCache
+export CACHE_DEFAULT_TIMEOUT=300
+export CACHE_THRESHOLD=5
 ```
 
 ### Running our API

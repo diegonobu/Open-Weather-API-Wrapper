@@ -8,13 +8,14 @@ from api_wrapper.models import Weather
 
 app = Flask(__name__)
 cache = Cache(config={
-    'CACHE_TYPE': 'SimpleCache',
-    'CACHE_DEFAULT_TIMEOUT': 300
+    'CACHE_TYPE': os.environ.get('CACHE_TYPE', default='SimpleCache'),
+    'CACHE_DEFAULT_TIMEOUT': int(os.environ.get('CACHE_DEFAULT_TIMEOUT', default=300)),
+    'CACHE_THRESHOLD': int(os.environ.get('CACHE_THRESHOLD', default=5))
 })
 
 API_URL = 'https://api.openweathermap.org/data/2.5/weather'
 API_KEY = os.environ.get('OPEN_WEATHER_API_KEY')
-default_max_number = os.environ.get('DEFAULT_MAX_NUMBER')
+default_max_number = int(os.environ.get('DEFAULT_MAX_NUMBER', default=290))
 
 
 @app.route('/temperature/<string:city_name>')

@@ -1,5 +1,5 @@
 .env
-.idea
-venv/*
-api_wrapper/__pycache__
-test/__pycache__/
+.idea/
+.pytest_cache/
+*/__pycache__/
+venv/
