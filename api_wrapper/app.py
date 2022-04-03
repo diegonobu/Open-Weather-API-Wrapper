@@ -4,7 +4,7 @@ import requests
 from flask import Flask, request, jsonify
 from flask_caching import Cache
 
-from models import Weather, City
+from api_wrapper.models import Weather
 
 app = Flask(__name__)
 cache = Cache(config={
@@ -25,14 +25,7 @@ def get_temperature_by_city_name(city_name):
 
     params = {'q': city_name, 'appid': API_KEY}
     r = requests.get(API_URL, params=params)
-    data = r.json()
-    city = City(name=data['name'], country=data['sys']['country'])
-    main_ = data['main']
-    weather = Weather(min=main_['temp_min'],
-                      max=main_['temp_max'],
-                      avg=main_['temp'],
-                      feels_like=main_['feels_like'],
-                      city=city)
+    weather = Weather.convert(r.json())
     cache.set(city_name, weather.dict())
     return jsonify(weather.dict())
 
@@ -40,10 +33,8 @@ def get_temperature_by_city_name(city_name):
 @app.route('/temperature')
 def get_temperature():
     max = request.args.get('max', float(default_max_number), float)
-    max_of_cities = {}
-    for city_name in cache.cache._cache:
-        city = cache.get(city_name)
-        if city['max'] <= max:
-            max_of_cities[city_name] = city['max']
+    max_of_cities = {city_name: cache.get(city_name)['max']
+                     for city_name in cache.cache._cache
+                     if cache.get(city_name)['max'] <= max}
 
     return jsonify(max_of_cities)

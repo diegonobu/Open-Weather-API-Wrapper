@@ -17,9 +17,9 @@ Install all requirements.
 pip install -r requirements.txt
 ```
 
-## Setting environmental variables
+### Setting environmental variables
 
-A file called `.env` should be created with environmental variables.
+Create a file called `.env` with environmental variables.
 
 ```text
 OPEN_WEATHER_API_KEY=<API KEY>
@@ -30,4 +30,18 @@ DEFAULT_MAX_NUMBER=<time interval>
 
 ```bash
 python run.py
+```
+
+## Running our unit tests
+
+Install requirements for development.
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Then run next command inside the project path.
+
+```bash
+py.test
 ```
