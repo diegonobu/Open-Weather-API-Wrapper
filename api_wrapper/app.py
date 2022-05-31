@@ -1,12 +1,13 @@
 import os
 
-from flask import Flask, request, jsonify
+import icontract
+from flask import request, jsonify, Blueprint, Response
 from flask_caching import Cache
 
 from api_wrapper import support_api
-from api_wrapper.models import Weather
+from api_wrapper.dbcsupport import pre, post
+from api_wrapper.models import Weather, WEATHER_BODY, WEATHER_FINAL
 
-app = Flask(__name__)
 cache = Cache(config={
     'CACHE_TYPE': os.environ.get('CACHE_TYPE', default='SimpleCache'),
     'CACHE_DEFAULT_TIMEOUT': int(os.environ.get('CACHE_DEFAULT_TIMEOUT', default=300)),
@@ -15,11 +16,32 @@ cache = Cache(config={
 
 default_max_number = int(os.environ.get('DEFAULT_MAX_NUMBER', default=290))
 
+temperature = Blueprint('temperature', __name__, url_prefix='/temperature')
 
-@app.route('/temperature/<string:city_name>')
-def get_temperature_by_city_name(city_name):
+
+@icontract.ensure(lambda result, data: post(result, WEATHER_FINAL))
+@icontract.require(lambda data: pre(data, WEATHER_BODY))
+@temperature.route('/<string:city_name>')
+def get_temperature_by_city_name(city_name) -> Response:
     """
     Gets description of weather of queried city.
+
+    req: 'main' in self;
+    req: 'temp_min' in self['main'];
+    req: 'temp_max' in self['main'];
+    req: 'temp' in self['main'];
+    req: 'feels_like' in self['main'];
+    req: 'name' in self;
+    req: 'sys' in self;
+    req: 'country' in self['sys'];
+
+    ensure: 'min' in self;
+    ensure: 'max' in self;
+    ensure: 'avg' in self;
+    ensure: 'feels_like' in self;
+    ensure: 'city' in self;
+    ensure: 'name' in self['city'];
+    ensure: 'country' in self['city'];
 
     :param (str) city_name: Name of the city.
     :return: Weather data in JSON format.
@@ -38,8 +60,8 @@ def get_temperature_by_city_name(city_name):
     return jsonify(weather.dict())
 
 
-@app.route('/temperature')
-def get_temperature():
+@temperature.route('/')
+def get_temperature() -> Response:
     """
     Gets list of cached cities with max temperature.
 

@@ -44,14 +44,14 @@ class TestModels(TestCase):
         city = models.City.convert(self.data)
 
         assert city.name == 'Dublin'
-        assert city.country == 'US'
+        assert city.country == 'USA'
 
     def test_should_set_right_max_min_avg_feels_like_and_city(self):
         """ Should set right values for 'max', 'min', 'avg', 'feels_like' and 'city' """
         weather = models.Weather.convert(self.data)
 
         assert weather.city.name == 'Dublin'
-        assert weather.city.country == 'US'
+        assert weather.city.country == 'USA'
         assert weather.max == 299.45
         assert weather.min == 289.59
         assert weather.avg == 295.76
