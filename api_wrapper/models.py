@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from api_wrapper.dbcsupport import inv
 from api_wrapper.support_api import get_iso3166_alpha3
 
-WEATHER_BODY = {
+WEATHER_REQ = {
     'main': {
         'temp_min': float,
         'temp_max': float,
@@ -17,7 +17,18 @@ WEATHER_BODY = {
     }
 }
 
-WEATHER_FINAL = {
+WEATHER_ENS = {
+    'min': float,
+    'max': float,
+    'avg': float,
+    'feels_like': float,
+    'city': {
+        'name': str,
+        'country': str
+    }
+}
+
+CACHED_REQ = {
     'min': float,
     'max': float,
     'avg': float,
@@ -39,7 +50,7 @@ class City(BaseModel):
                    country=get_iso3166_alpha3(data['sys']['country']))
 
 
-@icontract.invariant(lambda self: inv(self, WEATHER_FINAL))
+@icontract.invariant(lambda self: inv(self, WEATHER_ENS))
 class Weather(BaseModel):
     """
     inv: 'min' in self;
