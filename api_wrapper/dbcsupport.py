@@ -15,18 +15,21 @@ def pre(x: dict, model_body: dict) -> bool:
     return True
 
 
-def post(result: dict, model_final: dict) -> bool:
+def post(result: any, model_final: dict) -> bool:
     for k, v in model_final.items():
-        if k not in model_final:
-            return False
-
         _dict = result.dict() if isinstance(result, BaseModel) else result
+        if k not in _dict:
+            return False
 
         if isinstance(_dict.get(k), dict):
             return post(_dict.get(k), model_final[k])
 
-        if not isinstance(_dict.get(k), v):
+        if not isinstance(_dict.get(k), v.type):
             return False
+
+        if isinstance(_dict.get(k), str) and v.len is not None:
+            if len(_dict.get(k)) != v.len:
+                return False
 
     return True
 
