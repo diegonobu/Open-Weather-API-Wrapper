@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 from icontract.errors import ViolationError
 
-
 CACHED_DATA = {
     "avg": 280.68,
     "city": {

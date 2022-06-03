@@ -54,7 +54,6 @@ def get_temperature_by_city_name(city_name) -> Response:
         return {'message': city_data['message']}, 404
 
     weather = Weather.convert(city_data)
-    weather.city.country = support_api.get_iso3166_alpha3(weather.city.country)
     cache.set(city_name, weather.dict())
     return jsonify(weather.dict())
 

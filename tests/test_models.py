@@ -4,7 +4,6 @@ from icontract.errors import ViolationError
 from api_wrapper import models
 from api_wrapper.models import WeatherV2
 
-
 DATA = {
     'coord': {'lon': -121.9358, 'lat': 37.7021},
     'weather': [
