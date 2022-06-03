@@ -1,4 +1,5 @@
 from api_wrapper import models
+from api_wrapper.models import WeatherV2
 
 DATA = {
     'coord': {'lon': -121.9358, 'lat': 37.7021},
@@ -53,3 +54,17 @@ def test_should_set_right_max_min_avg_feels_like_and_city():
     assert weather.min == 289.59
     assert weather.avg == 295.76
     assert weather.feels_like == 295.17
+
+
+def test_example_of_invariant_usage():
+    """ Should raise a ViolationError because 'temp' value should not be str type """
+    WeatherV2({
+        'main': {
+            'temp': '295.76',
+            'feels_like': 295.17,
+            'temp_min': 289.59,
+            'temp_max': 299.45,
+        },
+        'sys': {'country': 'US'},
+        'name': 'Dublin',
+    })

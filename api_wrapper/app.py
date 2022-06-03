@@ -5,8 +5,8 @@ from flask import request, jsonify, Blueprint, Response
 from flask_caching import Cache
 
 from api_wrapper import support_api
-from api_wrapper.dbcsupport import pre, post
-from api_wrapper.models import Weather, WEATHER_REQ, WEATHER_ENS, CACHED_REQ
+from api_wrapper.dbcsupport import post
+from api_wrapper.models import Weather, WEATHER_ENS
 
 cache = Cache(config={
     'CACHE_TYPE': os.environ.get('CACHE_TYPE', default='SimpleCache'),
@@ -20,7 +20,6 @@ temperature = Blueprint('temperature', __name__, url_prefix='/temperature')
 
 
 @icontract.ensure(lambda result, data: post(result, WEATHER_ENS))
-@icontract.require(lambda data: pre(data, WEATHER_REQ))
 @temperature.route('/<string:city_name>')
 def get_temperature_by_city_name(city_name) -> Response:
     """
@@ -60,7 +59,6 @@ def get_temperature_by_city_name(city_name) -> Response:
     return jsonify(weather.dict())
 
 
-@icontract.require(lambda data: pre(data, CACHED_REQ))
 @temperature.route('/')
 def get_temperature() -> Response:
     """

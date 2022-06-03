@@ -1,8 +1,5 @@
-from unittest import skip
 from unittest.mock import patch
 
-from api_wrapper import app
-from api_wrapper.app import get_temperature
 
 CACHED_DATA = {
     "avg": 280.68,
@@ -33,7 +30,8 @@ RESPONSE_DATA = {
         'temp_max': 281.83,
         'pressure': 1028,
         'humidity': 92
-    }, 'visibility': 10000,
+    },
+    'visibility': 10000,
     'wind': {'speed': 6.17, 'deg': 320},
     'clouds': {'all': 75},
     'dt': 1649003979,
@@ -97,17 +95,24 @@ def test_should_return_error_message_when_city_name_doesnt_exist(mocked_cache, m
     assert response.status_code == 404
 
 
-@skip
+@patch('api_wrapper.app.support_api')
 @patch('api_wrapper.app.cache')
-def test_should_return_only_cities_temperature_max_290(mock_cache):
-    """ Should return only cities temperatures for up to 290 """
-    mock_cache.cache._cache.return_value = {
-        "tokyo": {"city": {"name": "Tokyo"}, "max": 281.83},
-        "manaus": {"city": {"name": "Manaus"}, "max": 291}
-    }
-    mock_cache.get.return_value = {"tokyo": 281.83,
-                                   "manaus": 291}
-    with app.test_request_context('/temperature', data={'max': 290}):
-        result = get_temperature()
-        assert 'Tokyo' in result.json
-        assert 'Manaus' not in result.json
+def test_example_of_pre_usage(mocked_cache, mocked_support_api, client):
+    """ Should raise a ViolationError because pre data of 'country' length is not 3 """
+    mocked_cache.get.return_value = None
+    RESPONSE_DATA['sys']['country'] = 'JPN'
+    mocked_support_api.get_data_by_city_name.return_value = RESPONSE_DATA
+
+    client.get("/temperature/tokyo")
+
+
+@patch('api_wrapper.app.support_api')
+@patch('api_wrapper.app.cache')
+def test_example_of_post_usage(mocked_cache, mocked_support_api, client):
+    """ Should raise a ViolationError because post data of 'country' length is not 2 """
+    mocked_cache.get.return_value = None
+    RESPONSE_DATA['sys']['country'] = 'JP'
+    mocked_support_api.get_data_by_city_name.return_value = RESPONSE_DATA
+    mocked_support_api.get_iso3166_alpha3.return_value = 'JP'
+
+    client.get("/temperature/tokyo")
