@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 def pre(x: dict, model_body: dict) -> bool:
+    """ Pre-condition """
     for k, v in model_body.items():
         if k not in x:
             return False
@@ -16,6 +17,7 @@ def pre(x: dict, model_body: dict) -> bool:
 
 
 def post(result: any, model_final: dict) -> bool:
+    """ Post-condition """
     for k, v in model_final.items():
         _dict = result.dict() if isinstance(result, BaseModel) else result
         if k not in _dict:
@@ -35,4 +37,5 @@ def post(result: any, model_final: dict) -> bool:
 
 
 def inv(this: any, model_final: dict) -> bool:
+    """ Invariant """
     return post(this, model_final)

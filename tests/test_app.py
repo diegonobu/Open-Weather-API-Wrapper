@@ -1,5 +1,8 @@
 from unittest.mock import patch
 
+import pytest
+from icontract.errors import ViolationError
+
 
 CACHED_DATA = {
     "avg": 280.68,
@@ -100,19 +103,20 @@ def test_should_return_error_message_when_city_name_doesnt_exist(mocked_cache, m
 def test_example_of_pre_usage(mocked_cache, mocked_support_api, client):
     """ Should raise a ViolationError because pre data of 'country' length is not 3 """
     mocked_cache.get.return_value = None
-    RESPONSE_DATA['sys']['country'] = 'JPN'
-    mocked_support_api.get_data_by_city_name.return_value = RESPONSE_DATA
+    response_data = {
+        'main': {
+            'temp': 280.68,
+            'feels_like': 277.2,
+            'temp_min': 279.59,
+            'temp_max': 281.83,
+        },
+        'sys': {'country': 'JPN'},  # Should be JP
+        'name': 'Tokyo',
+        'cod': 200
+    }
+    mocked_support_api.get_data_by_city_name.return_value = response_data
 
-    client.get("/temperature/tokyo")
+    with pytest.raises(ViolationError) as err:
+        client.get("/temperature/tokyo")
 
-
-@patch('api_wrapper.app.support_api')
-@patch('api_wrapper.app.cache')
-def test_example_of_post_usage(mocked_cache, mocked_support_api, client):
-    """ Should raise a ViolationError because post data of 'country' length is not 2 """
-    mocked_cache.get.return_value = None
-    RESPONSE_DATA['sys']['country'] = 'JP'
-    mocked_support_api.get_data_by_city_name.return_value = RESPONSE_DATA
-    mocked_support_api.get_iso3166_alpha3.return_value = 'JP'
-
-    client.get("/temperature/tokyo")
+    assert 'country code must have 2 letters' in err.value.args[0]
